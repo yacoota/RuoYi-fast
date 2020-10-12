@@ -8,6 +8,10 @@ build/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
 
+!**/bin/
+!**/out/
+!**/build/
+
 ### STS ###
 .apt_generated
 .classpath
