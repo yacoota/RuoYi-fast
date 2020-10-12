@@ -1,0 +1,112 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '2.1.17.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+}
+
+group = 'com.ruoyi'
+version = '1.0.0'
+
+sourceCompatibility = targetJavaVersion
+targetCompatibility = targetJavaVersion
+
+[compileJava, compileTestJava, javadoc]*.options*.encoding = 'UTF-8'
+
+
+configurations {
+    all*.exclude group: 'commons-logging'
+    developmentOnly
+    runtimeClasspath {
+        extendsFrom developmentOnly
+    }
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven { url "http://maven.aliyun.com/nexus/content/groups/public"}
+}
+
+ext {
+    shiro_version = "1.6.0"
+    thymeleaf_extras_shiro_version = "2.0.0"
+    mybatis_spring_boot_starter_version = "1.3.2"
+    pagehelper_spring_boot_starter_version = "1.2.5"
+    fastjson_version = "1.2.73"
+    druid_version = "1.1.22"
+    commons_io_version = "2.5"
+    commons_fileupload_version = "1.3.3"
+    bitwalker_version = "1.19"
+    lombok_version = "1.16.18"
+    velocity_version = "1.7"
+    kaptcha_version = "2.3.2"
+    swagger_version = "2.9.2"
+    poi_version = "3.17"
+    oshi_version = "5.2.5"
+    jna_version = "5.5.0"
+}
+
+dependencies {
+    implementation "org.springframework.boot:spring-boot-starter"
+    implementation "org.springframework.boot:spring-boot-starter-aop"
+    implementation "org.springframework.boot:spring-boot-starter-web"
+    implementation "org.springframework.boot:spring-boot-starter-thymeleaf"
+    implementation "mysql:mysql-connector-java"
+
+    implementation "org.mybatis.spring.boot:mybatis-spring-boot-starter:${mybatis_spring_boot_starter_version}"
+    implementation "com.github.pagehelper:pagehelper-spring-boot-starter:${pagehelper_spring_boot_starter_version}"
+    implementation "com.alibaba:druid-spring-boot-starter:${druid_version}"
+    implementation "org.apache.commons:commons-lang3"
+    implementation "commons-io:commons-io:${commons_io_version}"
+    implementation "commons-fileupload:commons-fileupload:${commons_fileupload_version}"
+    implementation "org.apache.shiro:shiro-core:${shiro_version}"
+    implementation "org.apache.shiro:shiro-spring:${shiro_version}"
+    implementation "org.apache.shiro:shiro-ehcache:${shiro_version}"
+    implementation "com.github.theborakompanioni:thymeleaf-extras-shiro:${thymeleaf_extras_shiro_version}"
+    implementation "com.alibaba:fastjson:${fastjson_version}"
+    implementation "eu.bitwalker:UserAgentUtils:${bitwalker_version}"
+    implementation "org.springframework:spring-context-support"
+    implementation "org.apache.velocity:velocity:${velocity_version}"
+    implementation "com.github.oshi:oshi-core:${oshi_version}"
+    implementation "org.apache.poi:poi-ooxml:${poi_version}"
+
+
+    implementation("org.quartz-scheduler:quartz") {
+        exclude group: "com.mchange", module: "c3p0"
+    }
+    implementation("com.github.penggle:kaptcha:${kaptcha_version}") {
+        exclude group: "javax.servlet-api", module: "javax.servlet"
+    }
+    implementation("io.springfox:springfox-swagger2:${swagger_version}") {
+        exclude group: "io.swagger", module: "swagger-annotations"
+        exclude group: "io.swagger", module: "swagger-models"
+    }
+    implementation "io.swagger:swagger-annotations:1.5.21"
+    implementation "io.swagger:swagger-models:1.5.21"
+    implementation "io.springfox:springfox-swagger-ui:${swagger_version}"
+
+    runtimeOnly "org.springframework.boot:spring-boot-devtools"
+
+    compileOnly "org.projectlombok:lombok"
+    annotationProcessor "org.projectlombok:lombok"
+
+    testImplementation "org.springframework.boot:spring-boot-starter-test"
+
+
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src/main/java'
+        }
+        resources {
+            srcDir 'src/main/resources'
+        }
+    }
+}
+
+defaultTasks 'clean', 'build'
