@@ -1,11 +1,13 @@
+// https://github.com/yacoota/RuoYi-fast.git
+
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '2.1.17.RELEASE'
-    id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+    id 'org.springframework.boot' version '2.2.12.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.10.RELEASE'
 }
 
 group = 'com.ruoyi'
-version = '1.0.0'
+version = '4.5.1'
 
 sourceCompatibility = targetJavaVersion
 targetCompatibility = targetJavaVersion
@@ -31,22 +33,22 @@ repositories {
 }
 
 ext {
-    shiro_version = "1.6.0"
+    shiro_version = "1.7.0"
     thymeleaf_extras_shiro_version = "2.0.0"
-    mybatis_spring_boot_starter_version = "1.3.2"
-    pagehelper_spring_boot_starter_version = "1.2.5"
-    fastjson_version = "1.2.73"
-    druid_version = "1.1.22"
+    mybatis_spring_boot_starter_version = "2.1.3"
+    pagehelper_spring_boot_starter_version = "1.3.0"
+    fastjson_version = "1.2.74"
+    druid_version = "1.2.2"
     commons_io_version = "2.5"
     commons_fileupload_version = "1.3.3"
-    bitwalker_version = "1.19"
+    bitwalker_version = "1.21"
     lombok_version = "1.16.18"
     velocity_version = "1.7"
     kaptcha_version = "2.3.2"
     swagger_version = "2.9.2"
-    poi_version = "3.17"
-    oshi_version = "5.2.5"
-    jna_version = "5.5.0"
+    poi_version = "4.1.2"
+    oshi_version = "5.3.6"
+    jna_version = "5.6.0"
 }
 
 dependencies {
@@ -94,8 +96,6 @@ dependencies {
     annotationProcessor "org.projectlombok:lombok"
 
     testImplementation "org.springframework.boot:spring-boot-starter-test"
-
-
 }
 
 sourceSets {

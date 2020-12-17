@@ -1,5 +1,6 @@
 package com.ruoyi.project.system.user.controller;
 
+import java.util.Date;
 import java.util.List;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -8,11 +9,18 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import com.ruoyi.common.constant.ShiroConstants;
 import com.ruoyi.common.utils.CookieUtils;
+import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.ServletUtils;
 import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.common.utils.text.Convert;
 import com.ruoyi.framework.config.RuoYiConfig;
+import com.ruoyi.framework.shiro.service.PasswordService;
 import com.ruoyi.framework.web.controller.BaseController;
+import com.ruoyi.framework.web.domain.AjaxResult;
 import com.ruoyi.project.system.config.service.IConfigService;
 import com.ruoyi.project.system.menu.domain.Menu;
 import com.ruoyi.project.system.menu.service.IMenuService;
@@ -33,6 +41,9 @@ public class IndexController extends BaseController
     private IConfigService configService;
 
     @Autowired
+    private PasswordService passwordService;
+
+    @Autowired
     private RuoYiConfig ruoYiConfig;
 
     // 系统首页
@@ -50,6 +61,8 @@ public class IndexController extends BaseController
         mmap.put("ignoreFooter", configService.selectConfigByKey("sys.index.ignoreFooter"));
         mmap.put("copyrightYear", ruoYiConfig.getCopyrightYear());
         mmap.put("demoEnabled", ruoYiConfig.isDemoEnabled());
+        mmap.put("isDefaultModifyPwd", initPasswordIsModify(user.getPwdUpdateDate()));
+        mmap.put("isPasswordExpired", passwordIsExpiration(user.getPwdUpdateDate()));
 
         // 菜单导航显示风格
         String menuStyle = configService.selectConfigByKey("sys.index.menuStyle");
@@ -68,6 +81,33 @@ public class IndexController extends BaseController
         }
         String webIndex = "topnav".equalsIgnoreCase(indexStyle) ? "index-topnav" : "index";
         return webIndex;
+    }
+
+    // 锁定屏幕
+    @GetMapping("/lockscreen")
+    public String lockscreen(ModelMap mmap)
+    {
+        mmap.put("user", getSysUser());
+        ServletUtils.getSession().setAttribute(ShiroConstants.LOCK_SCREEN, true);
+        return "lock";
+    }
+
+    // 解锁屏幕
+    @PostMapping("/unlockscreen")
+    @ResponseBody
+    public AjaxResult unlockscreen(String password)
+    {
+        User user = getSysUser();
+        if (StringUtils.isNull(user))
+        {
+            return AjaxResult.error("服务器超时，请重新登陆");
+        }
+        if (passwordService.matches(user, password))
+        {
+            ServletUtils.getSession().removeAttribute(ShiroConstants.LOCK_SCREEN);
+            return AjaxResult.success();
+        }
+        return AjaxResult.error("密码不正确，请重新输入。");
     }
 
     // 切换主题
@@ -90,5 +130,29 @@ public class IndexController extends BaseController
     {
         mmap.put("version", ruoYiConfig.getVersion());
         return "main";
+    }
+    
+    // 检查初始密码是否提醒修改
+    public boolean initPasswordIsModify(Date pwdUpdateDate)
+    {
+        Integer initPasswordModify = Convert.toInt(configService.selectConfigByKey("sys.account.initPasswordModify"));
+        return initPasswordModify !=null && initPasswordModify == 1 && pwdUpdateDate == null;
+    }
+    
+    // 检查密码是否过期
+    public boolean passwordIsExpiration(Date pwdUpdateDate)
+    {
+        Integer passwordValidateDays = Convert.toInt(configService.selectConfigByKey("sys.account.passwordValidateDays"));
+        if (passwordValidateDays !=null && passwordValidateDays > 0)
+        {
+            if (StringUtils.isNull(pwdUpdateDate))
+            {
+                // 如果从未修改过初始密码，直接提醒过期
+                return true;
+            }
+            Date nowDate = DateUtils.getNowDate();
+            return DateUtils.differentDaysByMillisecond(nowDate, pwdUpdateDate) > passwordValidateDays;
+        }
+        return false;
     }
 }
