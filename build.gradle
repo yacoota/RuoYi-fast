@@ -1,4 +1,4 @@
-// https://github.com/yacoota/RuoYi-fast.git
+//  https://gitee.com/y_project/RuoYi-fast.git
 
 plugins {
     id 'java'
